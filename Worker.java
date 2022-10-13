@@ -11,13 +11,16 @@ public class Worker extends Node
     static final String DEFAULT_DST_NODE = "server";
     InetSocketAddress dstAddress;
 
+	Terminal workerTerminal;
+
     /**
 	 * Constructor
 	 *
 	 * Attempts to create socket at given port and create an InetSocketAddress for the destinations
 	 */
-	Worker(String dstHost, int dstPort, int srcPort) {
+	Worker(Terminal t, String dstHost, int dstPort, int srcPort) {
 		try {
+			workerTerminal = t;
 			dstAddress= new InetSocketAddress(dstHost, dstPort);
 			socket= new DatagramSocket(srcPort);
 			listener.go();
@@ -30,13 +33,13 @@ public class Worker extends Node
 	 */
 	public synchronized void onReceipt(DatagramPacket packet) {
 		try {
-			System.out.println("Received packet");
+			workerTerminal.println("Received packet");
 
 			PacketContent content= PacketContent.fromDatagramPacket(packet);
 
 			if (content.getType()==PacketContent.FILEREQUEST) {
                 String fname = ((FileRequestContent)content).getFileName();
-				System.out.println("File name: " + fname);
+				workerTerminal.println("File name: " + fname);
 
                 File file= null;
                 FileInputStream fin= null;
@@ -53,33 +56,54 @@ public class Worker extends Node
                     fin.close();
                     throw new Exception("Problem with File Access:"+fname);
                 }
-                System.out.println("File size: " + buffer.length);
+                workerTerminal.println("File size: " + buffer.length);
 
                 fcontent= new FileInfoContent(fname, size);
 
-                System.out.println("Sending file content w/ name & length"); // Send packet with file name and length
+                workerTerminal.println("Sending file content w/ name & length"); // Send packet with file name and length
                 filepacket= fcontent.toDatagramPacket();
                 filepacket.setSocketAddress(dstAddress);
                 socket.send(filepacket);
-                System.out.println("Packet sent");
+                workerTerminal.println("Packet sent");
 				fin.close();
 			}
             else if (content.getType()==PacketContent.ACKPACKET) {
-                System.out.println(content.toString());
+                workerTerminal.println(content.toString());
+				this.notify();
             }
 		}
 		catch(Exception e) {e.printStackTrace();}
 	}
 
     public synchronized void start() throws Exception {
-		System.out.println("Waiting for contact");
+		workerTerminal.println("Connecting to Server");
+
+		DatagramPacket connect= new ConnectContent("CONNECT").toDatagramPacket();
+		connect.setSocketAddress(dstAddress);
+		socket.send(connect);
 		this.wait();
+
+		while (true) 
+		{
+			workerTerminal.println("Worker Online, type 'quit' to shutdown.");
+			String userInput = workerTerminal.read("Type quit Here");
+			if(userInput.equals("quit"))
+			{
+				DatagramPacket disconnect;
+				disconnect= new ConnectContent("DISCONNECT").toDatagramPacket();
+				disconnect.setSocketAddress(dstAddress);
+				socket.send(disconnect);
+				System.exit(0);
+			}
+			this.wait();
+		}
 	}
 
     public static void main(String[] args) {
 		try {
-			(new Worker(DEFAULT_DST_NODE, DEFAULT_DST_PORT, DEFAULT_SRC_PORT)).start();
-			System.out.println("Program completed");
+			Terminal workerTerminal = new Terminal("Worker");
+			(new Worker(workerTerminal, DEFAULT_DST_NODE, DEFAULT_DST_PORT, DEFAULT_SRC_PORT)).start();
+			workerTerminal.println("Program completed");
 		} catch(java.lang.Exception e) {e.printStackTrace();}
 	}
 }

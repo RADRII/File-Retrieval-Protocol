@@ -15,6 +15,7 @@ public abstract class PacketContent {
 	public static final int ACKPACKET = 10;
 	public static final int FILEREQUEST = 50;
 	public static final int FILEINFO = 100;
+	public static final int CONNECTREQUEST = 20;
 
 	int type= 0;
 
@@ -47,6 +48,9 @@ public abstract class PacketContent {
 				break;
 			case FILEREQUEST:
 				content= new FileRequestContent(oin);
+				break;
+			case CONNECTREQUEST:
+				content = new ConnectContent(oin);
 				break;
 			default:
 				content= null;
