@@ -83,11 +83,12 @@ public class Worker extends Node
 		socket.send(connect);
 		this.wait();
 
+		workerTerminal.println("Worker Online, type 'quit' to shutdown, anything else to open the worker,");
+		workerTerminal.println("Or wait 10 seconds.");
 		while (true) 
 		{
-			workerTerminal.println("Worker Online, type 'quit' to shutdown.");
 			String userInput = workerTerminal.read("Type quit Here");
-			if(userInput.equals("quit"))
+			if(userInput != null && userInput.equals("quit"))
 			{
 				DatagramPacket disconnect;
 				disconnect= new ConnectContent("DISCONNECT").toDatagramPacket();
@@ -96,6 +97,7 @@ public class Worker extends Node
 				System.exit(0);
 			}
 			this.wait();
+			workerTerminal.println("Action Completed, quit worker now?");
 		}
 	}
 

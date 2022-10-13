@@ -70,6 +70,8 @@ public class Server extends Node {
 
 				requests.put((InetSocketAddress) packet.getSocketAddress(), ((FileRequestContent)content).getFileName());
 
+				if(WORKER_TO_PICK > workers.size() - 1)
+					WORKER_TO_PICK = 0;
 				InetSocketAddress workerdst = workers.get(WORKER_TO_PICK);
 				WORKER_TO_PICK++;
 				if(WORKER_TO_PICK > workers.size() - 1)

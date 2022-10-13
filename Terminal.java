@@ -91,7 +91,7 @@ public class Terminal {
 		public synchronized String read() {
 			textField.setEditable(true);
 			try {
-				wait();
+				wait(10000);
 			}
 			catch(Exception e) {e.printStackTrace();}
 			textField.setEditable(false);
