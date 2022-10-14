@@ -33,6 +33,7 @@ public class Server extends Node {
 			PacketContent content= PacketContent.fromDatagramPacket(packet);
 
 			if (content.getType()==PacketContent.FILEINFO) {
+				System.out.println("FILE CONTENT RECEIVED");
 				System.out.println("File name: " + ((FileInfoContent)content).getFileName());
 				System.out.println("File size: " + ((FileInfoContent)content).getFileSize());
 
@@ -49,7 +50,6 @@ public class Server extends Node {
 				InetSocketAddress clientdst = getDestinationFromFileName(((FileInfoContent)content).getFileName());
 				if(clientdst == null)
 				{
-					System.out.println("ERROR FILE NOT REQUESTED");
 					throw new Exception("ERROR FILE NOT REQUESTED "+(((FileInfoContent)content).getFileName()));
 				}
 
@@ -65,7 +65,7 @@ public class Server extends Node {
 					throw new Exception("ERROR SERVER HAS NO WORKERS");
 				}
 
-				System.out.println("REQUEST: from " + packet.getSocketAddress());
+				System.out.println("FILE REQUEST: from " + packet.getSocketAddress());
 				System.out.println("File name: " + ((FileRequestContent)content).getFileName());
 
 				requests.put((InetSocketAddress) packet.getSocketAddress(), ((FileRequestContent)content).getFileName());
@@ -142,7 +142,7 @@ public class Server extends Node {
 	}
 
 	/*
-	 *
+	 * MAIN
 	 */
 	public static void main(String[] args) {
 		try {

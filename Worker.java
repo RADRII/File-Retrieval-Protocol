@@ -39,7 +39,7 @@ public class Worker extends Node
 
 			if (content.getType()==PacketContent.FILEREQUEST) {
                 String fname = ((FileRequestContent)content).getFileName();
-				workerTerminal.println("File name: " + fname);
+				workerTerminal.println("REQUEST - File name: " + fname);
 
                 File file= null;
                 FileInputStream fin= null;
@@ -54,7 +54,7 @@ public class Worker extends Node
 		        size= fin.read(buffer);
                 if (size==-1) {
                     fin.close();
-                    throw new Exception("Problem with File Access:"+fname);
+                    throw new Exception("ERROR: Problem with File Access:"+fname);
                 }
                 workerTerminal.println("File size: " + buffer.length);
 
@@ -90,6 +90,7 @@ public class Worker extends Node
 			String userInput = workerTerminal.read("Type quit Here");
 			if(userInput != null && userInput.equals("quit"))
 			{
+				workerTerminal.println("Sending Disconnect request to server");
 				DatagramPacket disconnect;
 				disconnect= new ConnectContent("DISCONNECT").toDatagramPacket();
 				disconnect.setSocketAddress(dstAddress);
