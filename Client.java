@@ -60,15 +60,11 @@ public class Client extends Node {
 	 */
 	public synchronized void start() throws Exception {
 		String fname;
-		String fnametwo;
 		FileRequestContent frequest;
-		FileRequestContent frequesttwo;
 
 		DatagramPacket packet= null;
-		DatagramPacket packettwo= null;
 
-		fname= "message.txt";//terminal.readString("Name of file: ");
-		fnametwo= "secondmessage.txt";
+		fname= "message.txt";
 
 		frequest = new FileRequestContent(fname);
 
@@ -79,16 +75,6 @@ public class Client extends Node {
 		socket.send(packet);
 		System.out.println("First request sent");
 		this.wait();
-
-		frequesttwo = new FileRequestContent(fnametwo);
-
-		System.out.println("Sending request for file secondmessage.txt");
-		packettwo= frequesttwo.toDatagramPacket();
-		packettwo.setSocketAddress(dstAddress);
-		socket.send(packettwo);
-		System.out.println("Second request sent");
-		this.wait();
-
 	}
 
 

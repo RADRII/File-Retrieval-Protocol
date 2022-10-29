@@ -5,9 +5,6 @@ import java.util.*;
 
 public class Server extends Node {
 	static final int DEFAULT_PORT = 50001;
-	static final int DEFAULT_CLIENT_DST_PORT = 50000;
-	static final int DEFAULT_WORKER_DST_PORT = 50002;
-	static final String DEFAULT_CLIENT_DNS = "client";
 	static int WORKER_TO_PICK = 0;
 
 	private HashMap<InetSocketAddress, String> requests = new HashMap<>();
@@ -89,7 +86,7 @@ public class Server extends Node {
 			else if(content.getType()==PacketContent.CONNECTREQUEST)
 			{
 				System.out.println(content.toString());
-				if(((ConnectContent) content).getPacketInfo().equals("CONNECT"))
+				if(((ConnectContent) content).getPacketInfo().equals("CON"))
 				{
 					workers.add((InetSocketAddress) packet.getSocketAddress());
 
@@ -99,7 +96,7 @@ public class Server extends Node {
 					response.setSocketAddress(packet.getSocketAddress());
 					socket.send(response);
 				}
-				else
+				else if(((ConnectContent) content).getPacketInfo().equals("DIS"))
 				{
 					if(workers.contains(packet.getSocketAddress()))
 					{
@@ -131,16 +128,6 @@ public class Server extends Node {
 		System.out.println("Waiting for contact");
 		this.wait();
 	}
-	/* METHODS FOR TESTING REMOVE AT END */
-	private synchronized void printHashMap ()
-	{
-		System.out.println("MAP");
-		for (Map.Entry<InetSocketAddress,String> entry : requests.entrySet()) {
-			System.out.println(entry.getKey() + " : " + entry.getValue());
-		}
-		return;
-	}
-
 	/*
 	 * MAIN
 	 */

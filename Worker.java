@@ -78,7 +78,7 @@ public class Worker extends Node
     public synchronized void start() throws Exception {
 		workerTerminal.println("Connecting to Server");
 
-		DatagramPacket connect= new ConnectContent("CONNECT").toDatagramPacket();
+		DatagramPacket connect= new ConnectContent("CON").toDatagramPacket();
 		connect.setSocketAddress(dstAddress);
 		socket.send(connect);
 		this.wait();
@@ -92,7 +92,7 @@ public class Worker extends Node
 			{
 				workerTerminal.println("Sending Disconnect request to server");
 				DatagramPacket disconnect;
-				disconnect= new ConnectContent("DISCONNECT").toDatagramPacket();
+				disconnect= new ConnectContent("DIS").toDatagramPacket();
 				disconnect.setSocketAddress(dstAddress);
 				socket.send(disconnect);
 				System.exit(0);
